@@ -26,6 +26,11 @@ video:
   # Whether to loop the video when it ends
   # When true, frame_id continues incrementing (does not reset)
   loop: true
+  
+  # JPEG encoding quality (1-100)
+  # Higher values = better quality, larger messages
+  jpeg_quality: 85
+
 
 # Server configuration
 server:

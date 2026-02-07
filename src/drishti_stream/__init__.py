@@ -14,10 +14,11 @@ This package is intentionally minimal:
 It does NOT perform any analytics, ML, or frame modification.
 
 Usage:
-    from drishti_stream import __version__
-    
     # Start the server
     uvicorn src.drishti_stream.main:app --host 0.0.0.0 --port 8000
+    
+    # Or run directly
+    python -m src.drishti_stream
 
 Version History:
     v1.0.0 - Initial release
@@ -26,8 +27,9 @@ Version History:
 __version__ = "1.0.0"
 __author__ = "Drishti Project"
 
-# Public API exports
-# (Will be populated as modules are implemented)
+from .config import settings
+
 __all__ = [
     "__version__",
+    "settings",
 ]

@@ -8,6 +8,8 @@ Primary Models:
     - FrameMessage: Output message schema for WebSocket frames
 """
 
+from .messages import FrameMessage
+
 __all__ = [
-    # "FrameMessage",
+    "FrameMessage",
 ]

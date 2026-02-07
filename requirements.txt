@@ -6,7 +6,7 @@
 fastapi>=0.109.0
 uvicorn[standard]>=0.27.0
 
-# WebSocket support (included with FastAPI, explicit for clarity)
+# WebSocket support
 websockets>=12.0
 
 # Video processing (headless - no GUI dependencies)
@@ -17,14 +17,8 @@ pyyaml>=6.0
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 
-# Google Cloud Storage (optional, for GCS video sources)
+# Google Cloud Storage (for GCS video sources)
 # Uncomment if using GCS:
 # google-cloud-storage>=2.14.0
 
-# Logging
-structlog>=24.1.0
-
-# Development dependencies (move to pyproject.toml [dev] when implemented)
-# pytest>=8.0.0
-# pytest-asyncio>=0.23.0
-# httpx>=0.26.0
+# Note: numpy is installed as a dependency of opencv-python-headless

@@ -2,11 +2,8 @@
 # =========================
 # Cloud Run compatible container definition.
 #
-# This Dockerfile is a SCAFFOLD - it provides the structure
-# for containerization but does not include runtime logic.
-#
 # Build: docker build -t drishti-stream .
-# Run:   docker run -p 8000:8000 drishti-stream
+# Run:   docker run -p 8000:8000 -v $(pwd)/data:/app/data drishti-stream
 
 FROM python:3.11-slim
 
@@ -29,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxext6 \
     libxrender-dev \
     libgomp1 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for layer caching
@@ -41,6 +39,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY config.yaml .
 
+# Create data directory (videos will be mounted here)
+RUN mkdir -p /app/data
+
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app
 
@@ -51,10 +52,9 @@ USER appuser
 EXPOSE 8000
 
 # Health check endpoint
-# TODO: Implement /health endpoint in main.py
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
 # Run the application
 # Cloud Run sets PORT environment variable
-CMD ["uvicorn", "src.drishti_stream.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn src.drishti_stream.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

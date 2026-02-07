@@ -18,9 +18,14 @@ The stream module is responsible for:
     Frames are read and transmitted exactly as they are in the source video.
 """
 
-# Module exports (will be populated as components are implemented)
+from .video_reader import VideoReader
+from .frame_scheduler import FrameScheduler
+from .websocket import stream_router, get_connection_manager, ConnectionManager
+
 __all__ = [
-    # "VideoReader",
-    # "FrameScheduler",
-    # "stream_router",
+    "VideoReader",
+    "FrameScheduler",
+    "stream_router",
+    "get_connection_manager",
+    "ConnectionManager",
 ]
