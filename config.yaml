@@ -17,11 +17,12 @@ video:
   # Path to video file
   # Supported formats: mp4, avi, mkv
   # Supports local paths or GCS URIs (gs://bucket/path/to/video.mp4)
-  path: "./data/sample.mp4"
+  path: "./data/ucsd_pedestrians.mp4"
   
   # Target frames per second
-  # Frames will be emitted at wall-clock-accurate intervals
-  fps: 30
+  # Set to 0 to auto-detect from source video (RECOMMENDED for research)
+  # If set manually, must be <= source video FPS (no upsampling allowed)
+  fps: 0
   
   # Whether to loop the video when it ends
   # When true, frame_id continues incrementing (does not reset)

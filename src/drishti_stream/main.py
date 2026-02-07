@@ -54,6 +54,7 @@ _video_reader: Optional[VideoReader] = None
 _frame_scheduler: Optional[FrameScheduler] = None
 _streaming_task: Optional[asyncio.Task] = None
 _shutdown_event: Optional[asyncio.Event] = None
+_effective_fps: int = 0  # Resolved FPS after validation
 
 
 async def streaming_loop() -> None:
@@ -72,7 +73,7 @@ async def streaming_loop() -> None:
     manager = get_connection_manager()
     
     logger.info(
-        f"Starting streaming loop: {settings.video.fps} FPS, "
+        f"Starting streaming loop: {_effective_fps} FPS, "
         f"JPEG quality {settings.video.jpeg_quality}"
     )
     
@@ -108,7 +109,7 @@ async def streaming_loop() -> None:
                 version=settings.stream.version,
                 frame_id=frame_id,
                 timestamp=_frame_scheduler.get_timestamp(),
-                fps=settings.video.fps,
+                fps=_effective_fps,
                 image=image_b64,
             )
             
@@ -147,13 +148,45 @@ async def lifespan(app: FastAPI):
         )
         logger.info(
             f"Video loaded: {_video_reader.width}x{_video_reader.height} "
-            f"@ {_video_reader.native_fps:.2f} FPS, "
+            f"@ {_video_reader.native_fps:.2f} FPS (native), "
             f"{_video_reader.total_frames} frames"
         )
         
-        # Initialize frame scheduler
-        _frame_scheduler = FrameScheduler(fps=settings.video.fps)
-        logger.info(f"FPS configured: {settings.video.fps}")
+        # Determine effective FPS
+        # Rule: Configured FPS must be <= native FPS to avoid temporal hallucination
+        native_fps = int(_video_reader.native_fps)
+        configured_fps = settings.video.fps
+        
+        if configured_fps == 0:
+            # Auto-detect: use native FPS
+            effective_fps = native_fps
+            logger.info(f"FPS auto-detected from source: {effective_fps}")
+        elif configured_fps > native_fps:
+            # CRITICAL: Upsampling without interpolation creates phantom frames
+            logger.error(
+                f"FATAL: Configured FPS ({configured_fps}) exceeds source video FPS ({native_fps}). "
+                f"This would cause frame repetition and temporal hallucination. "
+                f"Set fps=0 for auto-detect, or use fps <= {native_fps}."
+            )
+            raise ValueError(
+                f"FPS mismatch: configured={configured_fps}, native={native_fps}. "
+                f"Upsampling without interpolation is not allowed for research validity."
+            )
+        else:
+            # Downsampling is valid (skip frames)
+            effective_fps = configured_fps
+            if effective_fps < native_fps:
+                logger.info(f"FPS downsampled: {native_fps} -> {effective_fps}")
+            else:
+                logger.info(f"FPS matches source: {effective_fps}")
+        
+        # Store effective FPS for use in streaming
+        # We'll use a module-level variable since settings is immutable
+        global _effective_fps
+        _effective_fps = effective_fps
+        
+        # Initialize frame scheduler with validated FPS
+        _frame_scheduler = FrameScheduler(fps=effective_fps)
         
         # Create shutdown event
         _shutdown_event = asyncio.Event()

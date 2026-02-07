@@ -49,15 +49,20 @@ class VideoConfig(BaseModel):
     """Video source configuration."""
     
     path: str = Field(default="./data/sample.mp4", description="Video file path")
-    fps: int = Field(default=30, ge=1, le=120, description="Target FPS")
+    fps: int = Field(
+        default=0, 
+        ge=0, 
+        le=120, 
+        description="Target FPS. Set to 0 to use source video's native FPS (RECOMMENDED for research)"
+    )
     loop: bool = Field(default=True, description="Loop video on end")
     jpeg_quality: int = Field(default=85, ge=1, le=100, description="JPEG encoding quality")
     
     @field_validator("fps")
     @classmethod
     def validate_fps(cls, v: int) -> int:
-        if v <= 0:
-            raise ValueError("FPS must be positive")
+        if v < 0:
+            raise ValueError("FPS must be non-negative (0 = auto-detect from source)")
         return v
 
 
