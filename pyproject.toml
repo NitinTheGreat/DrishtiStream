@@ -1,0 +1,75 @@
+# DrishtiStream Project Configuration
+# ====================================
+# Modern Python project configuration using pyproject.toml
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drishti-stream"
+version = "1.0.0"
+description = "Virtual camera abstraction layer for the Drishti crowd analytics system"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "Drishti Project"}
+]
+keywords = ["video", "streaming", "websocket", "camera", "research"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Scientific/Engineering",
+]
+
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "websockets>=12.0",
+    "opencv-python-headless>=4.9.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "structlog>=24.1.0",
+]
+
+[project.optional-dependencies]
+gcs = [
+    "google-cloud-storage>=2.14.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "httpx>=0.26.0",
+    "ruff>=0.2.0",
+    "mypy>=1.8.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/drishti-project/drishti-stream"
+Documentation = "https://github.com/drishti-project/drishti-stream#readme"
+Repository = "https://github.com/drishti-project/drishti-stream"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

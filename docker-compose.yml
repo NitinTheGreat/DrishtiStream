@@ -1,0 +1,32 @@
+# DrishtiStream Docker Compose
+# ============================
+# Local development configuration.
+
+version: "3.8"
+
+services:
+  drishti-stream:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: drishti-stream
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount local video data directory
+      - ./data:/app/data:ro
+      # Mount config for hot-reloading
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - DRISHTI_LOG_LEVEL=DEBUG
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+  # Optional: Add monitoring services here
+  # prometheus:
+  #   image: prom/prometheus
+  #   ...

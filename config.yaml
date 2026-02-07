@@ -1,0 +1,45 @@
+# DrishtiStream Configuration
+# ============================
+# This file controls the behavior of the DrishtiStream virtual camera.
+# All values can be overridden via environment variables.
+
+# Stream identification
+stream:
+  # Unique name for this stream instance
+  name: "drishti-stream-primary"
+  
+  # Semantic version of the output protocol
+  # Downstream consumers should validate this matches expected version
+  version: "v1.0"
+
+# Video source configuration
+video:
+  # Path to video file
+  # Supported formats: mp4, avi, mkv
+  # Supports local paths or GCS URIs (gs://bucket/path/to/video.mp4)
+  path: "./data/sample.mp4"
+  
+  # Target frames per second
+  # Frames will be emitted at wall-clock-accurate intervals
+  fps: 30
+  
+  # Whether to loop the video when it ends
+  # When true, frame_id continues incrementing (does not reset)
+  loop: true
+
+# Server configuration
+server:
+  # Host to bind to
+  # Use 0.0.0.0 for container deployments
+  host: "0.0.0.0"
+  
+  # Port to listen on
+  port: 8000
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+  
+  # Log format: json or text
+  format: "json"
