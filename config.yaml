@@ -17,7 +17,8 @@ video:
   # Path to video file
   # Supported formats: mp4, avi, mkv
   # Supports local paths or GCS URIs (gs://bucket/path/to/video.mp4)
-  path: "./data/ucsd_pedestrians.mp4"
+  # path: "./data/ucsd_pedestrians.mp4"
+  path: "./data/stampede.mp4"
   
   # Target frames per second
   # Set to 0 to auto-detect from source video (RECOMMENDED for research)
